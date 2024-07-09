@@ -169,7 +169,7 @@ class RxnScribe:
 
 class MolDetect:
 
-    def __init__(self, model_path, device = None, coref = False):
+    def __init__(self, dec_model_path, device = None, coref = False, molscribe_ckpt_path = None, use_ocr = False):
         """
         MolDetect Interface
         :param model_path: path of the model checkpoint. 
@@ -178,15 +178,15 @@ class MolDetect:
         args = self._get_args()
         if not coref: args.format = 'bbox'
         else: args.format = 'coref'
-        states = torch.load(model_path, map_location = torch.device('cpu'))
+        states = torch.load(dec_model_path, map_location = torch.device('cpu'))
         if device is None:
             device = torch.device('cpu')
         self.device = device 
         self.tokenizer = get_tokenizer(args)
         self.model = self.get_model(args, self.tokenizer, self.device, states['state_dict'])
         self.transform = make_transforms('test', augment=False, debug=False)
-        self.ocr_model = self.get_ocr_model()
-        self.molscribe = self.get_molscribe()
+        self.ocr_model = self.get_ocr_model() if use_ocr else None
+        self.molscribe = self.get_molscribe(ckpt_path=molscribe_ckpt_path)
 
     def _get_args(self):
         parser = argparse.ArgumentParser()
@@ -231,8 +231,9 @@ class MolDetect:
         model.eval()
         return model
 
-    def get_molscribe(self): 
-        ckpt_path = hf_hub_download("yujieq/MolScribe", "swin_base_char_aux_1m.pth")
+    def get_molscribe(self, ckpt_path = None): 
+        if ckpt_path is None:
+            ckpt_path = hf_hub_download("yujieq/MolScribe", "swin_base_char_aux_1m.pth")
         molscribe = MolScribe(ckpt_path, device=self.device)
         return molscribe
 
