@@ -25,5 +25,5 @@ setup(name='RxnScribe',
       package_data={},
       setup_requires=['numpy'],
       install_requires=requirements,
-      dependency_links=['git+https://github.com/nksgw11/MolScribe.git@main'],
+      dependency_links=['git+https://github.com/nksgw11/MolScribe.git'],
       )
