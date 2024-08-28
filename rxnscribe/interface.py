@@ -84,8 +84,9 @@ class RxnScribe:
         model.eval()
         return model
 
-    def get_molscribe(self):
-        ckpt_path = hf_hub_download("yujieq/MolScribe", "swin_base_char_aux_1m.pth")
+    def get_molscribe(self, ckpt_path=None):
+        if ckpt_path is None:
+            ckpt_path = hf_hub_download("yujieq/MolScribe", "swin_base_char_aux_1m.pth")
         molscribe = MolScribe(ckpt_path, device=self.device)
         return molscribe
 
