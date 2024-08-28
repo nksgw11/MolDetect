@@ -20,7 +20,7 @@ import easyocr
 
 class RxnScribe:
 
-    def __init__(self, model_path, device=None):
+    def __init__(self, model_path, mol_model_path=None, device=None):
         """
         RxnScribe Interface
         :param model_path: path of the model checkpoint.
@@ -35,8 +35,12 @@ class RxnScribe:
         self.tokenizer = get_tokenizer(args)
         self.model = self.get_model(args, self.tokenizer, self.device, states['state_dict'])
         self.transform = make_transforms('test', augment=False, debug=False)
-        self.molscribe = self.get_molscribe()
-        self.ocr_model = self.get_ocr_model()
+        if mol_model_path is not None:
+            self.molscribe = self.get_molscribe(ckpt_path=mol_model_path)
+            self.ocr_model = None
+        else:
+            self.molscribe = self.get_molscribe()
+            self.ocr_model = self.get_ocr_model()
 
     def _get_args(self):
         parser = argparse.ArgumentParser()
